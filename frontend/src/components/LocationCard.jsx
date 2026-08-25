@@ -1,4 +1,4 @@
-import LocationMap from "./LocationMap";
+import LocationMap from "./LocationMap.js";
 
 function LocationCard({ observation }) {
     return (
@@ -22,7 +22,7 @@ function LocationCard({ observation }) {
                     </p>
 
                     <p className="mt-1 font-medium text-gray-900">
-                        {observation.latitude}
+                        {observation?.latitude}
                     </p>
                 </div>
 
@@ -32,7 +32,7 @@ function LocationCard({ observation }) {
                     </p>
 
                     <p className="mt-1 font-medium text-gray-900">
-                        {observation.longitude}
+                        {observation?.longitude}
                     </p>
                 </div>
             </div>

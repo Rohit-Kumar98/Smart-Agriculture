@@ -14,8 +14,8 @@ const roverIcon = new L.Icon({
 });
 
 function LocationMap({ observation }) {
-    const latitude = Number(observation.latitude);
-    const longitude = Number(observation.longitude);
+    const latitude = Number(observation?.latitude || 12.9716);
+    const longitude = Number(observation?.longitude || 77.5946);
 
     return (
         <div className="h-64 overflow-hidden rounded-lg">
@@ -35,9 +35,9 @@ function LocationMap({ observation }) {
                     icon={roverIcon}
                 >
                     <Popup>
-                        <strong>Rover</strong>
+                        <strong>Rover Payload</strong>
                         <br />
-                        {latitude}, {longitude}
+                        Lat: {latitude}, Long: {longitude}
                     </Popup>
                 </Marker>
             </MapContainer>

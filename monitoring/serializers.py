@@ -42,9 +42,6 @@ class RoverObservationSerializer(serializers.ModelSerializer):
         read_only_fields = [
             "id",
             "image_url",
-            "disease",
-            "confidence",
-            "severity",
             "created_at",
         ]
 

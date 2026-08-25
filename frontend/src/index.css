@@ -1,1 +1,184 @@
 @import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-primary: #0b130e;
+    --bg-card: rgba(18, 30, 22, 0.75);
+    --bg-card-hover: rgba(26, 42, 31, 0.9);
+    --bg-input: #121e16;
+    --text-main: #f0f7f2;
+    --text-muted: #8ca393;
+    --text-dim: #5c7263;
+    
+    --accent-primary: #4ade80;
+    --accent-glow: rgba(74, 222, 128, 0.25);
+    --accent-cyan: #38bdf8;
+    --accent-amber: #fbbf24;
+    --accent-rose: #f43f5e;
+    
+    --border-color: rgba(74, 222, 128, 0.15);
+    --border-card: rgba(255, 255, 255, 0.08);
+    --shadow-glow: 0 10px 30px -10px rgba(74, 222, 128, 0.2);
+  }
+
+  body.light-mode {
+    --bg-primary: #eef6f0;
+    --bg-card: rgba(255, 255, 255, 0.92);
+    --bg-card-hover: #ffffff;
+    --bg-input: #ffffff;
+    --text-main: #0a180e;
+    --text-muted: #2d4536;
+    --text-dim: #526f5d;
+    
+    --accent-primary: #15803d;
+    --accent-glow: rgba(21, 128, 61, 0.15);
+    --accent-cyan: #0284c7;
+    --accent-amber: #b45309;
+    --accent-rose: #be123c;
+    
+    --border-color: rgba(21, 128, 61, 0.2);
+    --border-card: rgba(10, 24, 14, 0.12);
+    --shadow-glow: 0 10px 30px -10px rgba(21, 128, 61, 0.15);
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+}
+
+/* Light mode text contrast adjustments */
+body.light-mode h1,
+body.light-mode h2,
+body.light-mode h3,
+body.light-mode h4,
+body.light-mode .text-white {
+  color: var(--text-main) !important;
+}
+
+body.light-mode p,
+body.light-mode .text-slate-400,
+body.light-mode .text-slate-300 {
+  color: var(--text-muted) !important;
+}
+
+body.light-mode nav {
+  background-color: rgba(238, 246, 240, 0.9) !important;
+  border-color: rgba(10, 24, 14, 0.1) !important;
+}
+
+body.light-mode .glass-card {
+  background-color: var(--bg-card);
+  border-color: var(--border-card);
+  box-shadow: 0 4px 20px rgba(10, 24, 14, 0.05);
+}
+
+body.light-mode .bg-slate-900,
+body.light-mode .bg-slate-950,
+body.light-mode .bg-\[\#0e1a12\]\/90 {
+  background-color: #ffffff !important;
+  border-color: rgba(10, 24, 14, 0.1) !important;
+}
+
+body.light-mode .bg-white\/5,
+body.light-mode .bg-white\/10 {
+  background-color: rgba(10, 24, 14, 0.05) !important;
+  border-color: rgba(10, 24, 14, 0.1) !important;
+}
+
+/* Base Image - Dark Atmospheric Plant Leaf Background */
+.base-image {
+  background-image: 
+    linear-gradient(to bottom, rgba(11, 19, 14, 0.75), rgba(11, 19, 14, 0.92)),
+    url("https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1920&auto=format&fit=crop&q=80");
+  background-size: cover;
+  background-position: center;
+  filter: contrast(1.1) brightness(0.6);
+  transition: transform 10s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+body.light-mode .base-image {
+  background-image: 
+    linear-gradient(to bottom, rgba(238, 246, 240, 0.75), rgba(238, 246, 240, 0.9)),
+    url("https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?w=1920&auto=format&fit=crop&q=80");
+  filter: contrast(1.05) brightness(1.05);
+}
+
+.hero:hover .base-image {
+  transform: scale(1.03);
+}
+
+/* Reveal Image - Vibrant Lush Green Leaves Revealed Under Cursor */
+.reveal-image {
+  background-image: 
+    linear-gradient(to bottom, rgba(74, 222, 128, 0.15), rgba(11, 19, 14, 0.3)),
+    url("https://images.unsplash.com/photo-1534710961216-75c88202f43e?w=1920&auto=format&fit=crop&q=80");
+  background-size: cover;
+  background-position: center;
+  filter: contrast(1.25) saturate(1.4) brightness(1.1);
+  pointer-events: none;
+}
+
+/* Glassmorphism Card Styling & 3D Tilt Hover */
+.glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-card);
+  border-radius: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-card-hover {
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.glass-card-hover:hover {
+  background: var(--bg-card-hover);
+  border-color: var(--accent-primary);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-4px) scale(1.01);
+}
+
+/* Radial Glow Follow Cursor on Cards */
+.glass-card-hover::before {
+  content: '';
+  position: absolute;
+  top: var(--glow-y, 50%);
+  left: var(--glow-x, 50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(74, 222, 128, 0.15) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.glass-card-hover:hover::before {
+  opacity: 1;
+}
+
+/* Laser Scan Animation */
+@keyframes laserScan {
+  0% { top: 0%; }
+  100% { top: 98%; }
+}
+
+.animate-laser {
+  animation: laserScan 3s ease-in-out infinite alternate;
+}
+
+/* Health Ring Circular Score */
+.health-ring-circle {
+  stroke-dasharray: 283;
+  transition: stroke-dashoffset 0.8s ease;
+}

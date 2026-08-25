@@ -1,42 +1,50 @@
 function AlertPanel({ observation }) {
     const alerts = [];
 
-    // Temporary generic thresholds.
-    // We will replace these once the crop requirements are confirmed.
+    if (!observation) return null;
 
-    if (observation.soil_moisture < 20) {
+    if (observation.soil_moisture !== undefined && observation.soil_moisture < 25) {
         alerts.push({
             type: "warning",
-            title: "Low Soil Moisture",
-            message: `Soil moisture is ${observation.soil_moisture}%.`,
+            title: "Low Soil Moisture Warning",
+            message: `Soil moisture is at ${observation.soil_moisture}%. Irrigation recommended.`,
         });
     }
 
-    if (observation.temperature > 40) {
+    if (observation.temperature !== undefined && observation.temperature > 35) {
         alerts.push({
             type: "warning",
-            title: "High Temperature",
-            message: `Temperature is ${observation.temperature}°C.`,
+            title: "High Heat Alert",
+            message: `Ambient temperature reached ${observation.temperature}°C.`,
         });
     }
 
-    if (observation.humidity > 90) {
+    if (observation.humidity !== undefined && observation.humidity > 85) {
         alerts.push({
             type: "warning",
-            title: "High Humidity",
-            message: `Humidity is ${observation.humidity}%.`,
+            title: "High Atmospheric Humidity",
+            message: `Humidity is ${observation.humidity}%, increasing fungal disease risk.`,
         });
     }
 
-    if (observation.disease) {
+    if (observation.ph !== undefined && (observation.ph < 5.5 || observation.ph > 7.5)) {
+        alerts.push({
+            type: "warning",
+            title: "Soil pH Imbalance",
+            message: `pH reading is ${observation.ph} (optimal crop range is 6.0 - 7.2).`,
+        });
+    }
+
+    if (observation.disease && observation.disease !== "Healthy Crop" && observation.disease !== "Healthy" && observation.disease !== "None") {
+        const rawConf = observation.confidence;
+        const confText = rawConf !== null && rawConf !== undefined
+            ? (rawConf > 1 ? `${Math.round(rawConf)}% confidence` : `${Math.round(rawConf * 100)}% confidence`)
+            : "high certainty";
+
         alerts.push({
             type: "danger",
-            title: "Disease Detected",
-            message: `${observation.disease}${
-                observation.confidence !== null
-                    ? ` (${observation.confidence}% confidence)`
-                    : ""
-            }.`,
+            title: `Pathogen Detected: ${observation.disease}`,
+            message: `AI Diagnostic match with ${confText}. Severity level: ${observation.severity || "Unspecified"}.`,
         });
     }
 
@@ -80,8 +88,7 @@ function AlertPanel({ observation }) {
                 ) : (
                     <div className="space-y-3">
                         {alerts.map((alert, index) => {
-                            const isDanger =
-                                alert.type === "danger";
+                            const isDanger = alert.type === "danger";
 
                             return (
                                 <div
