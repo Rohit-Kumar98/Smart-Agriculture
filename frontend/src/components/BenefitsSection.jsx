@@ -35,7 +35,7 @@ function BenefitsSection() {
     return (
         <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10" id="benefits">
             <div className="text-[11px] font-mono tracking-widest text-emerald-400 uppercase mb-4">
-                05 — GROW WITH PURPOSE
+                GROW WITH PURPOSE
             </div>
 
             <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-16 leading-tight">

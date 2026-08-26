@@ -2,20 +2,33 @@ import { useState } from "react";
 
 function ContactSection() {
     const [sent, setSent] = useState(false);
+    const [newsletterEmail, setNewsletterEmail] = useState("");
+    const [newsletterSent, setNewsletterSent] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();
         setSent(true);
+        setTimeout(() => setSent(false), 4000);
+    };
+
+    const handleNewsletterSubmit = (e) => {
+        e.preventDefault();
+        if (newsletterEmail) {
+            setNewsletterSent(true);
+            setTimeout(() => setNewsletterSent(false), 4000);
+            setNewsletterEmail("");
+        }
     };
 
     return (
         <section className="py-24 px-6 md:px-12 max-w-7xl mx-auto border-t border-white/10" id="contact">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Top Contact Form Block */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start mb-20">
                 <div>
-                    <div className="text-[11px] font-mono tracking-widest text-emerald-400 uppercase mb-4">
-                        07 — GET IN TOUCH
+                    <div className="text-[11px] font-mono tracking-widest text-emerald-400 uppercase mb-4 font-bold">
+                        GET IN TOUCH
                     </div>
-                    <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-6 leading-tight">
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-6 leading-tight">
                         Let’s grow<br />
                         <em className="font-playfair font-normal text-emerald-400">something better.</em>
                     </h2>
@@ -23,53 +36,185 @@ function ContactSection() {
                         Have a question or a project in mind? We would love to hear from you.
                     </p>
 
-                    <div className="flex gap-6 text-sm font-semibold text-emerald-400">
-                        <a href="#contact" className="hover:text-emerald-300 transition-colors">GitHub</a>
-                        <a href="#contact" className="hover:text-emerald-300 transition-colors">LinkedIn</a>
-                        <a href="mailto:hello@plantmonitoring.system" className="hover:text-emerald-300 transition-colors">Email</a>
+                    {/* Social Links with Icons matching screenshot */}
+                    <div className="flex items-center gap-6 text-sm font-semibold text-emerald-400">
+                        <a href="https://github.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-emerald-300 transition-colors group">
+                            <svg className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" />
+                            </svg>
+                            <span>GitHub</span>
+                        </a>
+
+                        <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-emerald-300 transition-colors group">
+                            <svg className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" />
+                            </svg>
+                            <span>LinkedIn</span>
+                        </a>
+
+                        <a href="mailto:hello@yourbrand.com" className="flex items-center gap-2 hover:text-emerald-300 transition-colors group">
+                            <svg className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                            <span>Email</span>
+                        </a>
                     </div>
                 </div>
 
-                <form onSubmit={handleSubmit} className="glass-card p-8 bg-slate-900/80 border border-white/10 space-y-5">
+                {/* Form without Message section - matching screenshot */}
+                <form onSubmit={handleSubmit} className="glass-card p-8 bg-[#0c1610]/90 border border-white/10 rounded-3xl space-y-5 shadow-2xl">
                     <div>
-                        <label className="block text-xs font-mono text-slate-400 uppercase mb-1">Name</label>
+                        <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5 font-semibold">NAME</label>
                         <input
                             type="text"
                             required
                             placeholder="Alex Green"
-                            className="w-full rounded-xl bg-slate-950/80 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none"
+                            className="w-full rounded-xl bg-slate-950/90 border border-white/15 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all font-medium"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-mono text-slate-400 uppercase mb-1">Email</label>
+                        <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5 font-semibold">EMAIL</label>
                         <input
                             type="email"
                             required
                             placeholder="alex@example.com"
-                            className="w-full rounded-xl bg-slate-950/80 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none"
+                            className="w-full rounded-xl bg-slate-950/90 border border-white/15 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all font-medium"
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-mono text-slate-400 uppercase mb-1">Message</label>
+                        <label className="block text-[10px] font-mono text-slate-400 uppercase tracking-wider mb-1.5 font-semibold">MESSAGE</label>
                         <textarea
                             rows="4"
                             required
                             placeholder="Tell us about your growing space..."
-                            className="w-full rounded-xl bg-slate-950/80 border border-white/10 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none"
+                            className="w-full rounded-xl bg-slate-950/90 border border-white/15 px-4 py-3 text-sm text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all font-medium resize-none"
                         />
                     </div>
+
                     <button
                         type="submit"
-                        className="w-full rounded-xl bg-emerald-500 py-3.5 px-6 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all cursor-pointer shadow-lg shadow-emerald-500/20"
+                        className="w-full rounded-xl bg-emerald-500 py-3.5 px-6 text-sm font-extrabold text-slate-950 hover:bg-emerald-400 transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2 mt-2"
                     >
-                        {sent ? "Message sent ✓" : "Send message ↗"}
+                        <span>{sent ? "Message sent ✓" : "Send message"}</span>
+                        {!sent && <span className="text-base">↗</span>}
                     </button>
                 </form>
             </div>
 
-            <footer className="mt-24 pt-8 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
-                <p>© 2026 Plant Monitoring System. All rights reserved.</p>
-                <a href="#hero" className="text-emerald-400 hover:text-emerald-300 font-semibold transition-colors">Back to top ↑</a>
+            {/* Comprehensive Footer Section matching Screenshot */}
+            <footer className="glass-card p-8 md:p-10 bg-[#09120d]/95 border border-white/10 rounded-3xl shadow-2xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 items-start">
+                    
+                    {/* Brand Info */}
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2.5 font-extrabold text-lg tracking-tight text-white">
+                            <svg width="24" height="24" viewBox="0 0 256 256" fill="none" className="text-emerald-400">
+                                <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z M 256 128 L 128 128 L 0 0 L 128 0 Z" fill="currentColor" />
+                            </svg>
+                            <span>flora<span className="font-light text-emerald-400">Watch</span></span>
+                        </div>
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                            Building digital experiences that create real impact.
+                        </p>
+                        <p className="text-[11px] text-slate-500 font-mono">
+                            © 2026 floraWatch. All rights reserved.
+                        </p>
+                    </div>
+
+                    {/* Quick Links */}
+                    <div className="space-y-3">
+                        <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Quick Links</h4>
+                        <ul className="space-y-2 text-xs text-slate-300 font-medium">
+                            <li><a href="#hero" className="hover:text-emerald-300 transition-colors">Home</a></li>
+                            <li><a href="#about" className="hover:text-emerald-300 transition-colors">About</a></li>
+                            <li><a href="#dashboard" className="hover:text-emerald-300 transition-colors">Dashboard</a></li>
+                            <li><a href="#benefits" className="hover:text-emerald-300 transition-colors">Purpose</a></li>
+                        </ul>
+                    </div>
+
+                    {/* Services */}
+                    <div className="space-y-3">
+                        <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Services</h4>
+                        <ul className="space-y-2 text-xs text-slate-300 font-medium">
+                            <li><span className="hover:text-emerald-300 transition-colors cursor-pointer">IoT Telemetry</span></li>
+                            <li><span className="hover:text-emerald-300 transition-colors cursor-pointer">AI Diagnostics</span></li>
+                            <li><span className="hover:text-emerald-300 transition-colors cursor-pointer">Smart Sprinkling</span></li>
+                            <li><span className="hover:text-emerald-300 transition-colors cursor-pointer">Soil Analytics</span></li>
+                        </ul>
+                    </div>
+
+                    {/* Contact Details */}
+                    <div className="space-y-3">
+                        <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Contact</h4>
+                        <ul className="space-y-2.5 text-xs text-slate-300">
+                            <li className="flex items-center gap-2">
+                                <span className="text-emerald-400 text-sm">📍</span>
+                                <span>123 Green St, Earth, 10001</span>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-emerald-400 text-sm">✉️</span>
+                                <a href="mailto:hello@yourbrand.com" className="hover:text-emerald-300 transition-colors">hello@yourbrand.com</a>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <span className="text-emerald-400 text-sm">📞</span>
+                                <span>+1 (555) 123-4567</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    {/* Follow Us & Stay in the Loop Newsletter */}
+                    <div className="space-y-4">
+                        <h4 className="text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider">Follow Us</h4>
+                        
+                        {/* Social Icon circles */}
+                        <div className="flex items-center gap-2">
+                            <a href="https://github.com" target="_blank" rel="noreferrer" className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" clipRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                            </a>
+                            <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+                            </a>
+                            <a href="https://twitter.com" target="_blank" rel="noreferrer" className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98C8.28 9.09 5.11 7.38 3 4.79c-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.05c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 0 1-1.93.07 4.28 4.28 0 0 0 4 2.98 8.521 8.521 0 0 1-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></svg>
+                            </a>
+                            <a href="https://instagram.com" target="_blank" rel="noreferrer" className="h-8 w-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-slate-300 hover:bg-emerald-500/20 hover:text-emerald-400 hover:border-emerald-500/30 transition-all">
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                            </a>
+                        </div>
+
+                        <div>
+                            <span className="text-xs font-mono font-bold text-slate-300 block mb-1">Stay in the loop</span>
+                            <p className="text-[11px] text-slate-400 mb-2">Get updates on new projects and insights.</p>
+                            <form onSubmit={handleNewsletterSubmit} className="flex items-center gap-1">
+                                <input
+                                    type="email"
+                                    required
+                                    value={newsletterEmail}
+                                    onChange={(e) => setNewsletterEmail(e.target.value)}
+                                    placeholder="Your email"
+                                    className="w-full rounded-xl bg-slate-950/90 border border-white/15 px-3.5 py-2 text-xs text-white placeholder-slate-600 focus:border-emerald-400 focus:outline-none"
+                                />
+                                <button
+                                    type="submit"
+                                    className="rounded-xl bg-emerald-500 px-3.5 py-2 text-xs font-bold text-slate-950 hover:bg-emerald-400 transition-all cursor-pointer shadow-md"
+                                >
+                                    {newsletterSent ? "✓" : "→"}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="pt-6 mt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500 gap-4">
+                    <p>© 2026 floraWatch. All rights reserved.</p>
+                    <button
+                        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                        className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 font-semibold transition-colors cursor-pointer group"
+                    >
+                        <span>Back to top</span>
+                        <span className="group-hover:-translate-y-0.5 transition-transform">↑</span>
+                    </button>
+                </div>
             </footer>
         </section>
     );

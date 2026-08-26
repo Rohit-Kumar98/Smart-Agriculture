@@ -9,9 +9,6 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
         ph: "6.5",
         latitude: "28.6142",
         longitude: "77.2093",
-        disease: "Early Leaf Blight",
-        confidence: "89.5",
-        severity: "Moderate",
     });
 
     const [loading, setLoading] = useState(false);
@@ -37,9 +34,9 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
                 ph: parseFloat(formData.ph),
                 latitude: parseFloat(formData.latitude),
                 longitude: parseFloat(formData.longitude),
-                disease: formData.disease.trim(),
-                confidence: formData.confidence ? parseFloat(formData.confidence) : null,
-                severity: formData.severity.trim(),
+                disease: "Healthy Crop",
+                confidence: 95.0,
+                severity: "None",
             };
 
             await createRoverObservation(payload);
@@ -53,40 +50,42 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs">
-            <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl transition-all border border-gray-200">
-                <div className="flex items-center justify-between border-b border-gray-100 bg-gray-50/50 px-6 py-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
+            <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-[#0e1a12] border border-emerald-500/30 text-white shadow-2xl transition-all">
+                {/* Modal Header */}
+                <div className="flex items-center justify-between border-b border-white/10 bg-slate-900/90 px-6 py-4">
                     <div className="flex items-center gap-2.5">
-                        <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 font-bold">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30 text-lg shadow-[0_0_10px_rgba(74,222,128,0.2)]">
                             📡
                         </span>
                         <div>
-                            <h3 className="font-bold text-gray-900">
-                                Simulate Rover Telemetry Payload
+                            <h3 className="font-extrabold text-white text-base tracking-tight">
+                                Transmit Telemetry Payload
                             </h3>
-                            <p className="text-xs text-gray-500">
-                                Transmit simulated sensor metrics directly to Django REST API
+                            <p className="text-xs text-slate-400 font-mono">
+                                Send live sensor telemetry directly to Django backend
                             </p>
                         </div>
                     </div>
                     <button
                         onClick={onClose}
-                        className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-600 transition-colors"
+                        className="rounded-lg p-1.5 text-slate-400 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
                     >
                         ✕
                     </button>
                 </div>
 
+                {/* Form Fields with High Contrast Styling */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
                     {error && (
-                        <div className="rounded-lg bg-rose-50 border border-rose-200 p-3 text-xs text-rose-700">
+                        <div className="rounded-lg bg-rose-500/20 border border-rose-500/40 p-3 text-xs text-rose-300 font-mono">
                             {error}
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                            <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
                                 Temperature (°C)
                             </label>
                             <input
@@ -96,12 +95,12 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
                                 value={formData.temperature}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="w-full rounded-xl bg-slate-950/90 border border-white/20 px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                            <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
                                 Humidity (%)
                             </label>
                             <input
@@ -111,46 +110,29 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
                                 value={formData.humidity}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="w-full rounded-xl bg-slate-950/90 border border-white/20 px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                Soil Moisture (%)
-                            </label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="soil_moisture"
-                                value={formData.soil_moisture}
-                                onChange={handleChange}
-                                required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                Soil pH
-                            </label>
-                            <input
-                                type="number"
-                                step="0.1"
-                                name="ph"
-                                value={formData.ph}
-                                onChange={handleChange}
-                                required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
+                            Soil Moisture (%)
+                        </label>
+                        <input
+                            type="number"
+                            step="0.1"
+                            name="soil_moisture"
+                            value={formData.soil_moisture}
+                            onChange={handleChange}
+                            required
+                            className="w-full rounded-xl bg-slate-950/90 border border-white/20 px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all"
+                        />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                            <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
                                 Latitude
                             </label>
                             <input
@@ -160,12 +142,12 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
                                 value={formData.latitude}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="w-full rounded-xl bg-slate-950/90 border border-white/20 px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
+                            <label className="block text-xs font-mono font-bold text-emerald-400 uppercase tracking-wider mb-1.5">
                                 Longitude
                             </label>
                             <input
@@ -175,77 +157,23 @@ function SimulateDataModal({ isOpen, onClose, onSuccess }) {
                                 value={formData.longitude}
                                 onChange={handleChange}
                                 required
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                                className="w-full rounded-xl bg-slate-950/90 border border-white/20 px-3.5 py-2.5 text-sm font-bold text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 transition-all"
                             />
                         </div>
                     </div>
 
-                    <div className="border-t border-gray-100 pt-3 space-y-3">
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                            AI Diagnostic Crop Payload
-                        </p>
-
-                        <div>
-                            <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                Disease Name / Status
-                            </label>
-                            <input
-                                type="text"
-                                name="disease"
-                                value={formData.disease}
-                                onChange={handleChange}
-                                placeholder="e.g. Healthy Crop, Leaf Spot, Powder Mildew"
-                                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Confidence (%)
-                                </label>
-                                <input
-                                    type="number"
-                                    step="0.1"
-                                    name="confidence"
-                                    value={formData.confidence}
-                                    onChange={handleChange}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                                />
-                            </div>
-
-                            <div>
-                                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                                    Severity
-                                </label>
-                                <select
-                                    name="severity"
-                                    value={formData.severity}
-                                    onChange={handleChange}
-                                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                                >
-                                    <option value="None">None</option>
-                                    <option value="Low">Low</option>
-                                    <option value="Moderate">Moderate</option>
-                                    <option value="High">High</option>
-                                    <option value="Critical">Critical</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-end gap-3 pt-4 border-t border-white/10">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+                            className="rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-slate-300 hover:bg-white/10 hover:text-white transition-all cursor-pointer"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors shadow-xs"
+                            className="rounded-xl bg-emerald-500 px-5 py-2.5 text-xs font-bold text-slate-950 hover:bg-emerald-400 disabled:opacity-50 transition-all shadow-lg shadow-emerald-500/25 active:scale-95 cursor-pointer"
                         >
                             {loading ? "Transmitting..." : "Send Telemetry"}
                         </button>

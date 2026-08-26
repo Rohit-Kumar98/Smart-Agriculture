@@ -3,6 +3,7 @@ import CropScan from "./CropScan.js";
 import LocationCard from "./LocationCard.js";
 import AlertPanel from "./AlertPanel.js";
 import PesticideSprinklingBanner from "./PesticideSprinklingBanner.js";
+import MovingSoilChart from "./MovingSoilChart.js";
 
 function DashboardView({ observations, loading, error, onRefresh, onOpenSimulateModal, apiConnected }) {
     const [activeTab, setActiveTab] = useState("overview");
@@ -17,7 +18,7 @@ function DashboardView({ observations, loading, error, onRefresh, onOpenSimulate
             <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
                 <div>
                     <div className="text-[11px] font-mono tracking-widest text-emerald-400 uppercase mb-3">
-                        04 — LIVE DASHBOARD
+                        LIVE DASHBOARD
                     </div>
                     <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white leading-tight">
                         Your garden,<br />
@@ -56,107 +57,81 @@ function DashboardView({ observations, loading, error, onRefresh, onOpenSimulate
                     </button>
                 </div>
 
-                        {/* Top Dual Cards: Soil Moisture Live Chart + Circular Health Score Ring matching Screenshot 2 */}
-                        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                            
-                            {/* Live SVG Soil Moisture Curve */}
-                            <div className="lg:col-span-8 glass-card p-6 bg-slate-900/60 border border-white/10 relative overflow-hidden">
-                                <div className="flex justify-between items-center mb-4">
-                                    <div>
-                                        <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400 block">SOIL MOISTURE</span>
-                                        <span className="text-3xl font-black text-white">{latest?.soil_moisture ?? 18}<sup>%</sup></span>
-                                    </div>
-                                    <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
-                                        ↑ LIVE
-                                    </span>
-                                </div>
+                {/* Top Dual Cards: Moving Live Soil Moisture Wave Chart + Circular Health Score Ring */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    {/* Moving Live SVG Soil Moisture Curve */}
+                    <div className="lg:col-span-8 glass-card p-6 bg-slate-900/60 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(74,222,128,0.18)] hover:-translate-y-1 relative overflow-hidden group">
+                        <MovingSoilChart observations={observations} currentMoisture={latest?.soil_moisture ?? 18} />
+                    </div>
 
-                                <div className="h-32 w-full">
-                                    <svg viewBox="0 0 600 120" preserveAspectRatio="none" className="h-full w-full">
-                                        <defs>
-                                            <linearGradient id="chartFillGrad" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="0%" stopColor="#4ade80" stopOpacity="0.4" />
-                                                <stop offset="100%" stopColor="#4ade80" stopOpacity="0" />
-                                            </linearGradient>
-                                        </defs>
-                                        <path
-                                            d="M0,90 C80,70 120,95 200,60 C280,30 340,75 420,50 C500,25 540,40 600,15 L600,120 L0,120 Z"
-                                            fill="url(#chartFillGrad)"
-                                        />
-                                        <path
-                                            d="M0,90 C80,70 120,95 200,60 C280,30 340,75 420,50 C500,25 540,40 600,15"
-                                            fill="none"
-                                            stroke="#4ade80"
-                                            strokeWidth="3"
-                                        />
-                                    </svg>
-                                </div>
-
-                                <div className="flex justify-between text-[10px] font-mono text-slate-500 mt-2">
-                                    <span>8 AM</span>
-                                    <span>11 AM</span>
-                                    <span>2 PM</span>
-                                    <span>5 PM</span>
-                                    <span>NOW</span>
-                                </div>
-                            </div>
-
-                            {/* Circular Health Score Ring Gauge matching Screenshot 2 */}
-                            <div className="lg:col-span-4 glass-card p-6 bg-slate-900/60 border border-white/10 flex items-center justify-around">
-                                <div className="relative flex items-center justify-center h-28 w-28">
-                                    <svg className="h-full w-full transform -rotate-90" viewBox="0 0 100 100">
-                                        <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none" />
-                                        <circle
-                                            cx="50" cy="50" r="42"
-                                            stroke="#4ade80"
-                                            strokeWidth="8"
-                                            strokeDasharray="263"
-                                            strokeDashoffset={263 - (263 * healthScore) / 100}
-                                            strokeLinecap="round"
-                                            fill="none"
-                                        />
-                                    </svg>
-                                    <div className="absolute text-center">
-                                        <span className="text-2xl font-black text-white block">{healthScore}</span>
-                                        <span className="text-[9px] font-mono uppercase text-slate-400 block">HEALTH</span>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <span className="text-xs text-slate-400 block">Plant health</span>
-                                    <strong className={`text-sm font-bold block ${isHealthy ? 'text-emerald-400' : 'text-amber-400'}`}>
-                                        {disease}
-                                    </strong>
-                                </div>
+                    {/* Circular Health Score Ring Gauge */}
+                    <div className="lg:col-span-4 glass-card p-6 bg-slate-900/60 border border-white/10 hover:border-emerald-500/40 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(74,222,128,0.18)] hover:-translate-y-1 flex items-center justify-around group">
+                        <div className="relative flex items-center justify-center h-28 w-28">
+                            <svg className="h-full w-full transform -rotate-90 group-hover:scale-105 transition-transform duration-300 drop-shadow-[0_0_8px_rgba(74,222,128,0.3)]" viewBox="0 0 100 100">
+                                <circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,0.1)" strokeWidth="8" fill="none" />
+                                <circle
+                                    cx="50" cy="50" r="42"
+                                    stroke="#4ade80"
+                                    strokeWidth="8"
+                                    strokeDasharray="263"
+                                    strokeDashoffset={263 - (263 * healthScore) / 100}
+                                    strokeLinecap="round"
+                                    fill="none"
+                                />
+                            </svg>
+                            <div className="absolute text-center">
+                                <span className="text-2xl font-black text-white block group-hover:scale-110 group-hover:text-emerald-300 transition-all duration-300">{healthScore}</span>
+                                <span className="text-[9px] font-mono uppercase text-slate-400 block font-semibold">HEALTH</span>
                             </div>
                         </div>
 
-                        {/* Metric Pills Row matching Screenshot 2 */}
-                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div className="glass-card p-4 bg-slate-900/40 border border-white/10">
-                                <span className="text-[10px] font-mono text-amber-400 block mb-1">☀ &nbsp; LIGHT LEVEL</span>
-                                <span className="text-xl font-extrabold text-white block">8.4k <em className="text-xs font-normal text-slate-400">lux</em></span>
-                                <span className="text-[10px] text-emerald-400 block mt-1">Optimal</span>
-                            </div>
-
-                            <div className="glass-card p-4 bg-slate-900/40 border border-white/10">
-                                <span className="text-[10px] font-mono text-rose-400 block mb-1">♨ &nbsp; TEMPERATURE</span>
-                                <span className="text-xl font-extrabold text-white block">{latest?.temperature ?? 31.0} <em className="text-xs font-normal text-slate-400">°C</em></span>
-                                <span className="text-[10px] text-amber-400 block mt-1">Elevated</span>
-                            </div>
-
-                            <div className="glass-card p-4 bg-slate-900/40 border border-white/10">
-                                <span className="text-[10px] font-mono text-sky-400 block mb-1">◒ &nbsp; HUMIDITY</span>
-                                <span className="text-xl font-extrabold text-white block">{latest?.humidity ?? 45.0} <em className="text-xs font-normal text-slate-400">%</em></span>
-                                <span className="text-[10px] text-emerald-400 block mt-1">Comfortable</span>
-                            </div>
-
-                            <div className="glass-card p-4 bg-slate-900/40 border border-white/10">
-                                <span className="text-[10px] font-mono text-emerald-400 block mb-1">🧪 &nbsp; SOIL pH</span>
-                                <span className="text-xl font-extrabold text-white block">{latest?.ph ?? 5.8} <em className="text-xs font-normal text-slate-400">pH</em></span>
-                                <span className="text-[10px] text-emerald-400 block mt-1">Balanced</span>
-                            </div>
+                        <div>
+                            <span className="text-xs text-slate-400 block font-medium">Plant health</span>
+                            <strong className={`text-sm font-bold block ${isHealthy ? 'text-emerald-400' : 'text-amber-400'} group-hover:text-emerald-300 transition-colors`}>
+                                {disease}
+                            </strong>
                         </div>
+                    </div>
+                </div>
+
+                {/* Metric Pills Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {/* Soil Moisture Pill Card */}
+                    <div className="glass-card p-5 bg-slate-900/40 border border-white/10 hover:border-emerald-400/50 hover:bg-slate-900/70 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(74,222,128,0.22)] hover:-translate-y-1.5 group cursor-pointer">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-[10px] font-mono text-emerald-400 font-bold block tracking-wider uppercase">💧 &nbsp; SOIL MOISTURE</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_8px_rgba(74,222,128,0.8)]" />
+                        </div>
+                        <span className="text-2xl font-black text-white block group-hover:text-emerald-300 transition-colors">
+                            {latest?.soil_moisture ?? 18} <em className="text-xs font-normal text-slate-400">%</em>
+                        </span>
+                        <span className="text-[10px] text-emerald-400 font-semibold block mt-1">Optimal</span>
+                    </div>
+
+                    {/* Temperature Pill Card */}
+                    <div className="glass-card p-5 bg-slate-900/40 border border-white/10 hover:border-rose-400/50 hover:bg-slate-900/70 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(244,63,94,0.22)] hover:-translate-y-1.5 group cursor-pointer">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-[10px] font-mono text-rose-400 font-bold block tracking-wider uppercase">♨ &nbsp; TEMPERATURE</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_8px_rgba(244,63,94,0.8)]" />
+                        </div>
+                        <span className="text-2xl font-black text-white block group-hover:text-rose-300 transition-colors">
+                            {latest?.temperature ?? 31.0} <em className="text-xs font-normal text-slate-400">°C</em>
+                        </span>
+                        <span className="text-[10px] text-amber-400 font-semibold block mt-1">Elevated</span>
+                    </div>
+
+                    {/* Humidity Pill Card */}
+                    <div className="glass-card p-5 bg-slate-900/40 border border-white/10 hover:border-sky-400/50 hover:bg-slate-900/70 transition-all duration-300 hover:shadow-[0_10px_30px_rgba(56,189,248,0.22)] hover:-translate-y-1.5 group cursor-pointer">
+                        <div className="flex items-center justify-between mb-1">
+                            <span className="text-[10px] font-mono text-sky-400 font-bold block tracking-wider uppercase">◒ &nbsp; HUMIDITY</span>
+                            <span className="h-1.5 w-1.5 rounded-full bg-sky-400 opacity-0 group-hover:opacity-100 transition-opacity shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+                        </div>
+                        <span className="text-2xl font-black text-white block group-hover:text-sky-300 transition-colors">
+                            {latest?.humidity ?? 45.0} <em className="text-xs font-normal text-slate-400">%</em>
+                        </span>
+                        <span className="text-[10px] text-emerald-400 font-semibold block mt-1">Comfortable</span>
+                    </div>
+                </div>
 
                         {/* Intelligent Pesticide Sprinkling System Controller Banner */}
                         <PesticideSprinklingBanner observation={latest} />
@@ -185,7 +160,6 @@ function DashboardView({ observations, loading, error, onRefresh, onOpenSimulate
                                             <th className="p-3">Temp</th>
                                             <th className="p-3">Humidity</th>
                                             <th className="p-3">Moisture</th>
-                                            <th className="p-3">pH</th>
                                             <th className="p-3">AI Disease</th>
                                         </tr>
                                     </thead>
@@ -196,7 +170,6 @@ function DashboardView({ observations, loading, error, onRefresh, onOpenSimulate
                                                 <td className="p-3 font-bold text-white">{obs.temperature}°C</td>
                                                 <td className="p-3">{obs.humidity}%</td>
                                                 <td className="p-3">{obs.soil_moisture}%</td>
-                                                <td className="p-3">{obs.ph}</td>
                                                 <td className="p-3 font-semibold text-emerald-400">{obs.disease || "Healthy"}</td>
                                             </tr>
                                         ))}

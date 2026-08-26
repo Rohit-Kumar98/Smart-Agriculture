@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 
 const SPOTLIGHT_R = 260;
 
-function HeroSpotlight() {
+function HeroSpotlight({ onNavigate }) {
     const canvasRef = useRef(null);
     const heroTitleRef = useRef(null);
 
@@ -108,12 +108,12 @@ function HeroSpotlight() {
                 </p>
 
                 <div className="pt-6">
-                    <a
-                        href="#dashboard"
-                        className="inline-flex items-center gap-3 rounded-full bg-white text-slate-950 px-8 py-4 text-sm font-extrabold shadow-2xl hover:bg-emerald-400 transition-all hover:scale-105"
+                    <button
+                        onClick={() => onNavigate && onNavigate("dashboard")}
+                        className="inline-flex items-center gap-3 rounded-full bg-white text-slate-950 px-8 py-4 text-sm font-extrabold shadow-2xl hover:bg-emerald-400 transition-all hover:scale-105 cursor-pointer"
                     >
                         View Dashboard <span>→</span>
-                    </a>
+                    </button>
                 </div>
             </div>
 

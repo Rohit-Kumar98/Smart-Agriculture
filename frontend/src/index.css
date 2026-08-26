@@ -48,6 +48,11 @@
     overflow-x: hidden;
     transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  input, select, textarea {
+    color: var(--text-main);
+    background-color: var(--bg-input);
+  }
 }
 
 .font-playfair {
