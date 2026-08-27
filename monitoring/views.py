@@ -1,267 +1,347 @@
-from rest_framework import status
-from rest_framework.parsers import JSONParser
-from rest_framework.response import Response
-from rest_framework.views import APIView
+# ============================================================
+# Rover Data API Views
+# ============================================================
+
+import base64
+import binascii
+import uuid
 
 from PIL import Image
+
+from django.core.files.base import ContentFile
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 from .models import RoverObservation
 from .serializers import RoverObservationSerializer
 
 from ai.predict import predict_image
-from ai.environment import assess_environment
+from ai.severity import calculate_severity
+from ai.advisory import get_advisory
 
+
+# ============================================================
+# Helper: Decode Base64 Image
+# ============================================================
+
+def decode_base64_image(image_data):
+    """
+    Convert a base64 encoded image into a Django ContentFile.
+
+    Supports both:
+
+        data:image/jpeg;base64,...
+
+    and:
+
+        /9j/4AAQSkZJRgABAQ...
+    """
+
+    if not image_data:
+        return None
+
+    try:
+
+        # Remove data URL prefix if present
+        if "," in image_data:
+            image_data = image_data.split(",", 1)[1]
+
+        image_data = image_data.strip()
+
+        # Decode base64
+        image_bytes = base64.b64decode(
+            image_data,
+            validate=True
+        )
+
+        # Generate unique filename
+        filename = (
+            f"leaf_scan_{uuid.uuid4().hex[:8]}.jpg"
+        )
+
+        return ContentFile(
+            image_bytes,
+            name=filename
+        )
+
+    except (
+        ValueError,
+        TypeError,
+        binascii.Error
+    ):
+
+        return None
+
+
+# ============================================================
+# Rover Data API
+# ============================================================
 
 class RoverDataView(APIView):
 
-    parser_classes = [
-        JSONParser
-    ]
-
-    # ============================================================
-    # POST - Receive rover observation
-    # ============================================================
+    # ========================================================
+    # POST
+    # ========================================================
 
     def post(self, request):
 
-        # --------------------------------------------------------
-        # Validate incoming data
-        # --------------------------------------------------------
+        # ----------------------------------------------------
+        # Get sensor/environmental data
+        # ----------------------------------------------------
 
-        serializer = RoverObservationSerializer(
-            data=request.data,
-            context={
-                "request": request
-            }
+        temperature = request.data.get(
+            "temperature"
         )
 
-        if not serializer.is_valid():
+        humidity = request.data.get(
+            "humidity"
+        )
 
-            return Response(
-                {
-                    "success": False,
-                    "error": "Invalid rover data.",
-                    "details": serializer.errors
-                },
-                status=status.HTTP_400_BAD_REQUEST
-            )
+        soil_moisture = request.data.get(
+            "soil_moisture"
+        )
 
-        # --------------------------------------------------------
-        # Save observation
-        # --------------------------------------------------------
+        latitude = request.data.get(
+            "latitude"
+        )
 
-        try:
+        longitude = request.data.get(
+            "longitude"
+        )
 
-            observation = serializer.save()
+        image_data = request.data.get(
+            "image"
+        )
 
-        except Exception as error:
+        # ----------------------------------------------------
+        # Create observation
+        # ----------------------------------------------------
 
-            print(
-                f"Observation save failed: {error}"
-            )
+        observation = RoverObservation(
+            temperature=temperature,
+            humidity=humidity,
+            soil_moisture=soil_moisture,
+            latitude=latitude,
+            longitude=longitude
+        )
 
-            return Response(
-                {
-                    "success": False,
-                    "error": "Failed to save rover observation."
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        # ====================================================
+        # Sensor Status
+        # ====================================================
 
-        # ========================================================
-        # ENVIRONMENTAL ASSESSMENT
-        # ========================================================
+        sensor_status = {
 
-        environmental_error = None
-
-        try:
-
-            environmental_assessment = assess_environment(
-                observation
-            )
-
-            observation.environmental_assessment = (
-                environmental_assessment
-            )
-
-            observation.save(
-                update_fields=[
-                    "environmental_assessment"
-                ]
-            )
-
-        except Exception as error:
-
-            print(
-                f"Environmental assessment failed: {error}"
-            )
-
-            environmental_error = (
-                "Environmental assessment failed."
-            )
-
-        # ========================================================
-        # AI DISEASE PREDICTION
-        # ========================================================
-
-        ai_error = None
-
-        if observation.image:
-
-            try:
-
-                # ------------------------------------------------
-                # Open uploaded image
-                # ------------------------------------------------
-
-                observation.image.open("rb")
-
-                # ------------------------------------------------
-                # Convert Django ImageFieldFile
-                # into PIL Image
-                # ------------------------------------------------
-
-                image = Image.open(
-                    observation.image
-                )
-
-                # ------------------------------------------------
-                # Run AI prediction
-                # ------------------------------------------------
-
-                prediction = predict_image(
-                    image
-                )
-
-                # ------------------------------------------------
-                # Disease
-                # ------------------------------------------------
-
-                observation.disease = (
-                    prediction["disease"]
-                    or ""
-                )
-
-                # ------------------------------------------------
-                # Confidence
-                # ------------------------------------------------
-
-                observation.confidence = (
-                    prediction["confidence"]
-                )
-
-                # ------------------------------------------------
-                # Severity
-                # ------------------------------------------------
-                # Currently based on confidence.
-                # ------------------------------------------------
-
-                confidence = prediction["confidence"]
-
-                if confidence >= 80:
-
-                    observation.severity = "High"
-
-                elif confidence >= 55:
-
-                    observation.severity = "Moderate"
-
-                else:
-
-                    observation.severity = "Low"
-
-                # ------------------------------------------------
-                # Save AI results
-                # ------------------------------------------------
-
-                observation.save(
-                    update_fields=[
-                        "disease",
-                        "confidence",
-                        "severity"
-                    ]
-                )
-
-            except Exception as error:
-
-                print(
-                    f"AI prediction failed: {error}"
-                )
-
-                ai_error = (
-                    "AI disease prediction failed."
-                )
-
-            finally:
-
-                # ------------------------------------------------
-                # Always close image
-                # ------------------------------------------------
-
-                try:
-                    observation.image.close()
-                except Exception:
-                    pass
-
-        # ========================================================
-        # PREPARE RESPONSE
-        # ========================================================
-
-        response_data = RoverObservationSerializer(
-            observation,
-            context={
-                "request": request
-            }
-        ).data
-
-        # --------------------------------------------------------
-        # Add processing status
-        # --------------------------------------------------------
-
-        response_data["processing_status"] = {
-            "environmental_assessment": (
-                "failed"
-                if environmental_error
-                else "completed"
+            "temperature": (
+                "ok"
+                if temperature is not None
+                else "fault"
             ),
-            "ai_prediction": (
-                "failed"
-                if ai_error
-                else (
-                    "completed"
-                    if observation.image
-                    else "skipped"
+
+            "humidity": (
+                "ok"
+                if humidity is not None
+                else "fault"
+            ),
+
+            "soil_moisture": (
+                "ok"
+                if soil_moisture is not None
+                else "unavailable"
+            ),
+
+            "gps": (
+                "ok"
+                if (
+                    latitude is not None
+                    and longitude is not None
                 )
+                else "fault"
+            ),
+
+            "camera": (
+                "ok"
+                if image_data
+                else "unavailable"
             )
         }
 
-        # --------------------------------------------------------
-        # Add errors only when something failed
-        # --------------------------------------------------------
+        observation.sensor_status = sensor_status
 
-        processing_errors = {}
+        # ====================================================
+        # Default AI values
+        # ====================================================
 
-        if environmental_error:
+        disease = ""
+        confidence = None
+        severity = ""
+        advisory = None
 
-            processing_errors[
-                "environmental_assessment"
-            ] = environmental_error
+        processing_status = {
+            "environmental_assessment": "completed",
+            "ai_prediction": "skipped"
+        }
 
-        if ai_error:
+        # ====================================================
+        # IMAGE PROVIDED
+        # ====================================================
 
-            processing_errors[
-                "ai_prediction"
-            ] = ai_error
+        if image_data:
 
-        if processing_errors:
+            # ------------------------------------------------
+            # Decode image
+            # ------------------------------------------------
 
-            response_data["processing_errors"] = (
-                processing_errors
+            image_file = decode_base64_image(
+                image_data
             )
 
-        # ========================================================
-        # RETURN RESPONSE
-        # ========================================================
+            # ------------------------------------------------
+            # Invalid image
+            # ------------------------------------------------
+
+            if image_file is None:
+
+                return Response(
+                    {
+                        "success": False,
+                        "error": "Invalid base64 image."
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            # ------------------------------------------------
+            # Save image to ImageField
+            # ------------------------------------------------
+
+            observation.image.save(
+                image_file.name,
+                image_file,
+                save=False
+            )
+
+            # =================================================
+            # AI Prediction
+            # =================================================
+
+            try:
+
+                # ---------------------------------------------
+                # IMPORTANT:
+                # predict_image() expects a PIL Image.
+                #
+                # observation.image is a Django
+                # ImageFieldFile, so open the actual file
+                # using PIL first.
+                # ---------------------------------------------
+
+                with Image.open(
+                    observation.image.path
+                ) as image:
+
+                    prediction = predict_image(
+                        image
+                    )
+
+                # ---------------------------------------------
+                # Get prediction result
+                # ---------------------------------------------
+
+                disease = prediction.get(
+                    "disease",
+                    ""
+                )
+
+                confidence = prediction.get(
+                    "confidence"
+                )
+
+                # ---------------------------------------------
+                # Calculate severity
+                # ---------------------------------------------
+
+                severity = calculate_severity(
+                    confidence
+                )
+
+                # ---------------------------------------------
+                # Generate disease advisory
+                # ---------------------------------------------
+
+                advisory = get_advisory(
+                    disease
+                )
+
+                processing_status[
+                    "ai_prediction"
+                ] = "completed"
+
+            except Exception as e:
+
+                # ------------------------------------------------
+                # Keep sensor data successful even if AI fails
+                # ------------------------------------------------
+
+                print(
+                    "AI prediction failed:",
+                    e
+                )
+
+                processing_status[
+                    "ai_prediction"
+                ] = "failed"
+
+                disease = ""
+                confidence = None
+                severity = ""
+                advisory = None
+
+        # ====================================================
+        # Save AI results
+        # ====================================================
+
+        observation.disease = disease
+
+        observation.confidence = confidence
+
+        observation.severity = severity
+
+        # ----------------------------------------------------
+        # Save observation
+        # ----------------------------------------------------
+
+        observation.save()
+
+        # ====================================================
+        # Serialize observation
+        # ====================================================
+
+        serializer = RoverObservationSerializer(
+            observation
+        )
+
+        response_data = serializer.data
+
+        # ====================================================
+        # Add Advisory
+        # ====================================================
+
+        response_data[
+            "advisory"
+        ] = advisory
+
+        # ====================================================
+        # Add Processing Status
+        # ====================================================
+
+        response_data[
+            "processing_status"
+        ] = processing_status
+
+        # ====================================================
+        # Return Response
+        # ====================================================
 
         return Response(
             {
@@ -271,47 +351,30 @@ class RoverDataView(APIView):
             status=status.HTTP_201_CREATED
         )
 
-    # ============================================================
-    # GET - Return all observations
-    # ============================================================
+
+# ============================================================
+# Rover Data List API
+# ============================================================
+
+class RoverDataListView(APIView):
 
     def get(self, request):
 
-        try:
+        observations = (
+            RoverObservation.objects
+            .all()
+            .order_by("-created_at")
+        )
 
-            observations = (
-                RoverObservation.objects
-                .all()
-                .order_by("-created_at")
-            )
+        serializer = RoverObservationSerializer(
+            observations,
+            many=True
+        )
 
-            serializer = RoverObservationSerializer(
-                observations,
-                many=True,
-                context={
-                    "request": request
-                }
-            )
-
-            return Response(
-                {
-                    "success": True,
-                    "count": observations.count(),
-                    "data": serializer.data
-                },
-                status=status.HTTP_200_OK
-            )
-
-        except Exception as error:
-
-            print(
-                f"Failed to retrieve observations: {error}"
-            )
-
-            return Response(
-                {
-                    "success": False,
-                    "error": "Failed to retrieve rover observations."
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+        return Response(
+            {
+                "success": True,
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
