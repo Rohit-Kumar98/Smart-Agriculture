@@ -1,10 +1,12 @@
 import base64
+import mimetypes
 from io import BytesIO
 
 from django.core.files.base import ContentFile
 from PIL import Image
 from rest_framework import serializers
 
+from ai.advisory import get_advisory
 from .models import RoverObservation
 
 
@@ -18,6 +20,14 @@ class RoverObservationSerializer(serializers.ModelSerializer):
     )
 
     image_url = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    advisory = serializers.SerializerMethodField(
+        read_only=True
+    )
+
+    processing_status = serializers.SerializerMethodField(
         read_only=True
     )
 
@@ -35,6 +45,8 @@ class RoverObservationSerializer(serializers.ModelSerializer):
             "sensor_status",
             "image",
             "image_url",
+            "advisory",
+            "processing_status",
             "disease",
             "confidence",
             "severity",
@@ -45,6 +57,8 @@ class RoverObservationSerializer(serializers.ModelSerializer):
             "id",
             "sensor_status",
             "image_url",
+            "advisory",
+            "processing_status",
             "disease",
             "confidence",
             "severity",
@@ -288,14 +302,25 @@ class RoverObservationSerializer(serializers.ModelSerializer):
         if not obj.image:
             return None
 
-        request = self.context.get(
-            "request"
+        try:
+            obj.image.open("rb")
+            raw_image = obj.image.read()
+        finally:
+            obj.image.close()
+
+        image_format = Image.open(BytesIO(raw_image)).format.lower()
+        content_type = mimetypes.types_map.get(
+            f".{image_format}",
+            "image/jpeg"
         )
+        image_data = base64.b64encode(raw_image).decode("ascii")
+        return f"data:{content_type};base64,{image_data}"
 
-        if request:
+    def get_advisory(self, obj):
+        return get_advisory(obj.disease)
 
-            return request.build_absolute_uri(
-                obj.image.url
-            )
-
-        return obj.image.url
+    def get_processing_status(self, obj):
+        return {
+            "environmental_assessment": "completed" if obj.sensor_status else "skipped",
+            "ai_prediction": "completed" if obj.image and obj.disease else "failed" if obj.image else "skipped",
+        }

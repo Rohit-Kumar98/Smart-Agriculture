@@ -79,6 +79,16 @@ function CropScan({ observation }) {
                     </p>
                 </div>
             </div>
+
+            {observation?.advisory && (observation.advisory.cause || observation.advisory.recommendation || observation.advisory.prevention) && (
+                <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-sm text-emerald-900">
+                    <p className="text-xs font-medium uppercase tracking-wide text-emerald-700">Crop Advisory</p>
+                    <p className="mt-2"><strong>Cause:</strong> {observation.advisory.cause}</p>
+                    <p className="mt-1"><strong>Recommendation:</strong> {observation.advisory.recommendation}</p>
+                    <p className="mt-1"><strong>Prevention:</strong> {observation.advisory.prevention}</p>
+                </div>
+            )}
+
         </div>
     );
 }

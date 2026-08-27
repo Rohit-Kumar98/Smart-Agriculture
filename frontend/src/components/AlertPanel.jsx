@@ -27,14 +27,6 @@ function AlertPanel({ observation }) {
         });
     }
 
-    if (observation.ph !== undefined && (observation.ph < 5.5 || observation.ph > 7.5)) {
-        alerts.push({
-            type: "warning",
-            title: "Soil pH Imbalance",
-            message: `pH reading is ${observation.ph} (optimal crop range is 6.0 - 7.2).`,
-        });
-    }
-
     if (observation.disease && observation.disease !== "Healthy Crop" && observation.disease !== "Healthy" && observation.disease !== "None") {
         const rawConf = observation.confidence;
         const confText = rawConf !== null && rawConf !== undefined

@@ -9,7 +9,8 @@ export async function getRoverData() {
         throw new Error("Failed to fetch rover data from backend API");
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
 }
 
 export async function createRoverObservation(observationData) {
@@ -27,5 +28,6 @@ export async function createRoverObservation(observationData) {
         throw new Error(errorMessage);
     }
 
-    return response.json();
+    const result = await response.json();
+    return result.data || result;
 }

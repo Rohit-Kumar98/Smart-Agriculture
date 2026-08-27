@@ -5,9 +5,9 @@ function Navbar({ activePage, onNavigate, theme, onToggleTheme, apiConnected, on
         { id: "home", name: "Home" },
         { id: "care", name: "About & Features" },
         { id: "dashboard", name: "Dashboard" },
+        { id: "logs", name: "Logs" },
         { id: "purpose", name: "Purpose" },
-        { id: "contact", name: "Contact" },
-        { id: "all", name: "Full View" }
+        { id: "contact", name: "Contact" }
     ];
 
     return (
@@ -20,7 +20,7 @@ function Navbar({ activePage, onNavigate, theme, onToggleTheme, apiConnected, on
                 <svg width="26" height="26" viewBox="0 0 256 256" fill="none" className="text-emerald-400 transition-transform duration-300 group-hover:rotate-12 group-hover:scale-110">
                     <path d="M 256 256 L 128 256 L 0 128 L 128 128 Z M 256 128 L 128 128 L 0 0 L 128 0 Z" fill="currentColor" />
                 </svg>
-                <span>flora<span className="font-light text-emerald-400 group-hover:text-emerald-300 transition-colors">Watch</span></span>
+                <span>Plant<span className="font-light text-emerald-400 group-hover:text-emerald-300 transition-colors">Speak</span></span>
                 <span className="text-[10px] font-mono uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-md group-hover:bg-emerald-500/20 transition-all">
                     Rover
                 </span>

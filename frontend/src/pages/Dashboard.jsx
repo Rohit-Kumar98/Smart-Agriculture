@@ -6,13 +6,14 @@ import AboutSection from "../components/AboutSection.js";
 import DashboardView from "../components/DashboardView.js";
 import BenefitsSection from "../components/BenefitsSection.js";
 import ContactSection from "../components/ContactSection.js";
+import TelemetryLogs from "../components/TelemetryLogs.jsx";
 import SimulateDataModal from "../components/SimulateDataModal.js";
 
 import { getRoverData } from "../services/api.js";
 
 function Dashboard() {
-    // Separate Page view state: 'home', 'care', 'dashboard', 'purpose', 'contact', 'all'
-    const [activePage, setActivePage] = useState("all");
+    // Dedicated page view state: 'home', 'care', 'dashboard', 'logs', 'purpose', 'contact'
+    const [activePage, setActivePage] = useState("home");
     const [observations, setObservations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -95,19 +96,19 @@ function Dashboard() {
 
             <main className="pt-18 min-h-[85vh]">
                 {/* Page 1: Home View */}
-                {(activePage === "home" || activePage === "all") && (
+                {activePage === "home" && (
                     <HeroSpotlight onNavigate={handleNavigate} />
                 )}
 
                 {/* Page 2: Smart Plant Care & Telemetry */}
-                {(activePage === "care" || activePage === "all") && (
+                {activePage === "care" && (
                     <div className="animate-fade-in transition-all">
                         <AboutSection />
                     </div>
                 )}
 
                 {/* Page 3: Live Dashboard Suite */}
-                {(activePage === "dashboard" || activePage === "all") && (
+                {activePage === "dashboard" && (
                     <div className="animate-fade-in transition-all">
                         <DashboardView
                             observations={observations}
@@ -120,15 +121,26 @@ function Dashboard() {
                     </div>
                 )}
 
-                {/* Page 4: Grow With Purpose Benefits */}
-                {(activePage === "purpose" || activePage === "all") && (
+                {/* Page 4: Telemetry History Logs */}
+                {activePage === "logs" && (
+                    <div className="animate-fade-in transition-all">
+                        <TelemetryLogs
+                            observations={observations}
+                            loading={loading}
+                            error={error}
+                        />
+                    </div>
+                )}
+
+                {/* Page 5: Grow With Purpose Benefits */}
+                {activePage === "purpose" && (
                     <div className="animate-fade-in transition-all">
                         <BenefitsSection />
                     </div>
                 )}
 
-                {/* Page 5: Contact Section */}
-                {(activePage === "contact" || activePage === "all") && (
+                {/* Page 6: Contact Section */}
+                {activePage === "contact" && (
                     <div className="animate-fade-in transition-all">
                         <ContactSection />
                     </div>

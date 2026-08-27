@@ -5,6 +5,7 @@
 import base64
 import binascii
 import uuid
+from io import BytesIO
 
 from PIL import Image
 
@@ -17,7 +18,10 @@ from rest_framework import status
 from .models import RoverObservation
 from .serializers import RoverObservationSerializer
 
-from ai.predict import predict_image
+try:
+    from ai.predict import predict_image
+except ImportError:
+    predict_image = None
 from ai.severity import calculate_severity
 from ai.advisory import get_advisory
 
@@ -73,6 +77,23 @@ def decode_base64_image(image_data):
     ):
 
         return None
+
+
+def backfill_prediction(observation):
+    if not observation.image or observation.disease or predict_image is None:
+        return
+
+    try:
+        with observation.image.open("rb") as image_file:
+            with Image.open(image_file) as image:
+                prediction = predict_image(image)
+
+        observation.disease = prediction.get("disease", "")
+        observation.confidence = prediction.get("confidence")
+        observation.severity = calculate_severity(observation.confidence)
+        observation.save(update_fields=["disease", "confidence", "severity"])
+    except Exception as error:
+        print("AI prediction backfill failed:", error)
 
 
 # ============================================================
@@ -263,9 +284,14 @@ class RoverDataView(APIView):
                 # using PIL first.
                 # ---------------------------------------------
 
+                image_file.seek(0)
+
                 with Image.open(
-                    observation.image.path
+                    BytesIO(image_file.read())
                 ) as image:
+
+                    if predict_image is None:
+                        raise RuntimeError("AI prediction dependencies are unavailable")
 
                     prediction = predict_image(
                         image
@@ -405,3 +431,9 @@ class RoverDataListView(APIView):
             },
             status=status.HTTP_200_OK
         )
+
+        for observation in observations:
+            backfill_prediction(observation)
+
+        for observation in observations:
+            backfill_prediction(observation)

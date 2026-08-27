@@ -34,17 +34,6 @@ function SensorGrid({ observation }) {
         moistureType = "warning";
     }
 
-    const ph = observation?.ph ?? 0;
-    let phStatus = "Balanced";
-    let phType = "optimal";
-    if (ph < 5.5) {
-        phStatus = "Acidic Soil";
-        phType = "warning";
-    } else if (ph > 7.5) {
-        phStatus = "Alkaline Soil";
-        phType = "warning";
-    }
-
     return (
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <SensorCard
@@ -74,14 +63,6 @@ function SensorGrid({ observation }) {
                 statusType={moistureType}
             />
 
-            <SensorCard
-                title="Soil pH"
-                value={observation?.ph}
-                unit="pH"
-                icon="⚗️"
-                status={phStatus}
-                statusType={phType}
-            />
         </section>
     );
 }
