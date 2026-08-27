@@ -82,6 +82,33 @@ def decode_base64_image(image_data):
 class RoverDataView(APIView):
 
     # ========================================================
+    # GET
+    # ========================================================
+
+    def get(self, request):
+
+        observations = (
+            RoverObservation.objects
+            .all()
+            .order_by("-created_at")
+        )
+
+        serializer = RoverObservationSerializer(
+            observations,
+            many=True
+        )
+
+        return Response(
+            {
+                "success": True,
+                "count": observations.count(),
+                "data": serializer.data
+            },
+            status=status.HTTP_200_OK
+        )
+
+    
+    # ========================================================
     # POST
     # ========================================================
 
