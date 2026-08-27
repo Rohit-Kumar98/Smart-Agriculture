@@ -1,28 +1,104 @@
-# Python
+# ============================================================
+# PYTHON
+# ============================================================
+
 __pycache__/
 *.py[cod]
-*.log
+*$py.class
+*.pyo
 
-# Virtual environment
-venv/
+# ============================================================
+# VIRTUAL ENVIRONMENTS
+# ============================================================
+
 .venv/
+venv/
+env/
+ENV/
 
-# Django
+# ============================================================
+# DJANGO
+# ============================================================
+
 db.sqlite3
+db.sqlite3-journal
+
+# Uploaded/generated media
 media/
 
-# Environment variables
+# Static files generated for deployment
+staticfiles/
+static/
+
+# Django logs
+*.log
+
+# ============================================================
+# AI / MACHINE LEARNING
+# ============================================================
+
+# Training dataset
+ai/dataset/
+
+# Test images
+ai/test_images/
+
+# AI Python cache
+ai/__pycache__/
+ai/.pytest_cache/
+
+# ============================================================
+# FRONTEND / NODE
+# ============================================================
+
+frontend/node_modules/
+
+# Frontend build output
+frontend/dist/
+frontend/build/
+
+# Frontend cache
+frontend/.cache/
+frontend/.vite/
+
+# ============================================================
+# ENVIRONMENT / SECRETS
+# ============================================================
+
 .env
 .env.*
+!.env.example
 
-# React
-frontend/node_modules/
-frontend/dist/
+# ============================================================
+# TESTING / COVERAGE
+# ============================================================
 
-# IDE
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ============================================================
+# IDE / EDITOR
+# ============================================================
+
 .vscode/
 .idea/
 
+# ============================================================
 # OS
+# ============================================================
+
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# ============================================================
+# TEMPORARY FILES
+# ============================================================
+
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
