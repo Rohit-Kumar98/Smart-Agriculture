@@ -30,6 +30,7 @@ function TelemetryLogs({ observations, loading, error }) {
                         <table className="w-full text-left text-xs text-slate-300">
                             <thead className="bg-black/30 text-[10px] uppercase font-mono text-slate-400">
                                 <tr>
+                                    <th className="p-3">Date</th>
                                     <th className="p-3">Timestamp</th>
                                     <th className="p-3">Temp</th>
                                     <th className="p-3">Humidity</th>
@@ -40,6 +41,7 @@ function TelemetryLogs({ observations, loading, error }) {
                             <tbody className="divide-y divide-white/5">
                                 {observations.map((observation) => (
                                     <tr key={observation.id} className="hover:bg-white/5 transition-colors">
+                                        <td className="p-3 font-mono">{new Date(observation.created_at).toLocaleDateString()}</td>
                                         <td className="p-3 font-mono">{new Date(observation.created_at).toLocaleTimeString()}</td>
                                         <td className="p-3 font-bold text-white">{observation.temperature}°C</td>
                                         <td className="p-3">{observation.humidity}%</td>

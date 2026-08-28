@@ -3,6 +3,23 @@ import CropScan from "./CropScan.js";
 import LocationCard from "./LocationCard.js";
 import AlertPanel from "./AlertPanel.js";
 
+const statusPillClasses = {
+    ok: "bg-white/90 text-slate-700",
+    completed: "bg-emerald-500/15 text-emerald-300 border border-emerald-400/20",
+    failed: "bg-rose-500/15 text-rose-300 border border-rose-400/20",
+    fault: "bg-amber-500/15 text-amber-300 border border-amber-400/20",
+    unavailable: "bg-slate-500/15 text-slate-400 border border-slate-400/20",
+    skipped: "bg-slate-500/15 text-slate-400 border border-slate-400/20",
+};
+
+function StatusPill({ label, status }) {
+    return (
+        <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-semibold ${statusPillClasses[status] || statusPillClasses.unavailable}`}>
+            {label}: {status || "unavailable"}
+        </span>
+    );
+}
+
 function DashboardView({ observations, loading, error, onRefresh, onOpenSimulateModal, apiConnected }) {
     const [activeTab, setActiveTab] = useState("overview");
     const latest = observations[0];
@@ -52,6 +69,27 @@ function DashboardView({ observations, loading, error, onRefresh, onOpenSimulate
                         + Add / Simulate Telemetry
                     </button>
                 </div>
+
+                {hasObservations && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="rounded-2xl bg-white/[0.03] p-4 md:p-5">
+                            <h4 className="text-sm font-semibold text-slate-400 mb-3">Sensor Status</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {Object.entries(latest.sensor_status || {}).map(([label, status]) => (
+                                    <StatusPill key={label} label={label.replace("_", " ")} status={status} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="rounded-2xl bg-white/[0.03] p-4 md:p-5">
+                            <h4 className="text-sm font-semibold text-slate-400 mb-3">Processing Status</h4>
+                            <div className="flex flex-wrap gap-2">
+                                {Object.entries(latest.processing_status || {}).map(([label, status]) => (
+                                    <StatusPill key={label} label={label.replace("_", " ")} status={status} />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {!loading && !error && !hasObservations && (
                     <div className="rounded-2xl border border-dashed border-emerald-400/35 bg-emerald-500/5 px-6 py-14 text-center">

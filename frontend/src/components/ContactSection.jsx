@@ -106,7 +106,11 @@ function ContactSection() {
                         <ul className="space-y-2.5 text-xs text-slate-300">
                             <li className="flex items-center gap-2">
                                 <span className="text-emerald-400 text-sm">📍</span>
-                                <span>Jagamara, Khandagiri, Bhubaneswar, Odisha 751030</span>
+                                <span>
+                                    Institute of Technical Education and Research (ITER)<br />
+                                    Siksha 'O' Anusandhan<br />
+                                    Bhubaneswar, Odisha 751030
+                                </span>
                             </li>
                             <li className="flex items-center gap-2">
                                 <span className="text-emerald-400 text-sm">✉️</span>
